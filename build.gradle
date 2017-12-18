@@ -1,0 +1,38 @@
+apply plugin: 'java'
+
+version = '1.0'
+
+repositories {
+	maven {url 'http://localhost:8081/repository/maven-public/'}
+	flatDir {dirs 'libs'}
+}
+
+dependencies {
+	compile 'org.apache.poi:poi:3.17'
+	compile 'org.apache.poi:poi-ooxml:3.17'
+	compile 'util:util'
+	compile 'commons-logging:commons-logging:1.2'
+	testCompile 'junit:junit:4.12'
+}
+
+tasks.withType(JavaCompile) {  
+    options.encoding = 'UTF-8'  
+}  
+
+task zip(type: Zip) {
+	into('libs') {
+		from configurations.runtime.collect { it }
+	}
+	from "build/libs/${project.name}-${version}.jar"
+}
+
+javadoc {
+    options{
+        encoding 'UTF-8'
+        charSet 'UTF-8'
+        author true
+        version true
+        showFromPublic() 
+        title 'excel简单封装'
+    }
+}

@@ -19,5 +19,7 @@ excel.setWidths
 excel.write/writeRow
 ### 合并单元格
 excel.merge
+## 保存
+excel.save
 
-#...
+...

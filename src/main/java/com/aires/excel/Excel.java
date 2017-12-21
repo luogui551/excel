@@ -130,7 +130,7 @@ public class Excel implements Closeable{
 	 * @param values
 	 */
 	public Excel writeRow(Object...values){
-		if(colNum > 0)next();//空行就写到当前行
+		if(colNum > 0)nextRow();//空行就写到当前行
 		write(values);
 		return this;
 	}
@@ -157,14 +157,6 @@ public class Excel implements Closeable{
 	 */
 	public Excel merge(int rowCount, int colCount){
 		return merge(rowNum - 1, rowCount, colNum, colCount);
-	}
-	/**
-	 * 换行
-	 * @return
-	 */
-	public Excel next(){
-		skipRow(0);
-		return this;
 	}
 	/**
 	 * 切换sheet
@@ -211,11 +203,11 @@ public class Excel implements Closeable{
 		return this;
 	}
 	/**
-	 * 跳过指定列
+	 * 跳过指定列(下次获取单元格时生效)
 	 * @param colCount
 	 * @return
 	 */
-	public Excel skip(int colCount){
+	public Excel skipCol(int colCount){
 		colNum += colCount;
 		return this;
 	}
@@ -225,10 +217,24 @@ public class Excel implements Closeable{
 	 * @return
 	 */
 	public Excel skipRow(int rowCount){
-		rowNum += rowCount;
+		rowNum += rowCount - 1;//因为moveTo方法会使rowNum+1
 		
 		moveTo(rowNum, 0);
 		return this;
+	}
+	/**
+	 * 跳过1列(下次获取单元格时生效)
+	 * @return
+	 */
+	public Excel skipCol(){
+		return skipCol(1);
+	}
+	/**
+	 * 下一行
+	 * @return
+	 */
+	public Excel nextRow(){
+		return skipRow(1);
 	}
 	/**
 	 * 获取指定单元格的数据(该方法不会改变索引值)
@@ -261,29 +267,27 @@ public class Excel implements Closeable{
 		return null;
 	}
 	/**
-	 * 遍历当前sheet
+	 * 遍历当前sheet(该方法不会改变索引值)
 	 * @param resolver
 	 * @return
 	 */
 	public Excel iterate(RowResolver resolver){
 		Iterator<Row>it = sheet.rowIterator();
 		
-		int rowNum = 0;
 		while(it.hasNext()){
-			resolver.resolve(rowNum++, it.next());
+			Row r = it.next();
+			resolver.resolve(r.getRowNum(), r);
 		}
 		
 		return this;
 	}
 	/**
-	 * 遍历当前sheet
+	 * 遍历当前sheet(该方法不会改变索引值)
 	 * @param resolver
 	 * @return
 	 */
 	public Excel iterate(final CellResolver resolver){
-		iterate(new CellRowResolverAdapter(resolver));
-		
-		return this;
+		return iterate(new CellRowResolverAdapter(resolver));
 	}
 	/**
 	 * 遍历所有sheet
@@ -304,9 +308,7 @@ public class Excel implements Closeable{
 	 * @return
 	 */
 	public Excel iterateAll(final CellResolver resolver){
-		iterate(new CellRowResolverAdapter(resolver));
-		
-		return this;
+		return iterate(new CellRowResolverAdapter(resolver));
 	}
 	/**
 	 * 保存当前excel(调用此方法后对象将不可用)

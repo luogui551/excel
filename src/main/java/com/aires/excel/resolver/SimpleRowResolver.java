@@ -17,14 +17,14 @@ public abstract class SimpleRowResolver implements RowResolver{
 	@Override
 	public void resolve(int rowNum, Row row) {
 		Object[]values = new Object[row.getLastCellNum() - row.getFirstCellNum()];
-		int index = 0;
 		Iterator<Cell>it = row.cellIterator();
 		boolean hasNotEmptyValue = false, skipRow = skipEmptyRow();
 		while(it.hasNext()){
-			values[index] = ExcelUtil.val(it.next());
+			Cell c = it.next();
+			//迭代器返回所有有值的单元格，对无值的单元格可能不返回（所以递加的索引不准确）
+			int index = c.getColumnIndex();
+			values[index] = ExcelUtil.val(c);
 			if(skipRow && !hasNotEmptyValue && values[index] != null && String.valueOf(values[index]).trim().length() > 0)hasNotEmptyValue = true;
-			
-			index++;
 		}
 		if(skipRow && !hasNotEmptyValue)return;
 		

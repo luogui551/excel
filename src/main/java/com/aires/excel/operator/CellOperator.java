@@ -23,6 +23,7 @@ public abstract class CellOperator {
 		registe(CellType.BOOLEAN, new BooleanOperator(), Boolean.class);
 		registe(CellType.NUMERIC, new NumbericOperator(), Number.class, Date.class);
 		registe(CellType.FORMULA, new FormulaOperator());
+		registe(null, new ImageOperator(), byte[].class);
 	}
 	/**
 	 * 注册

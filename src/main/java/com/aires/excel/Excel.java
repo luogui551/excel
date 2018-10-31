@@ -191,6 +191,20 @@ public class Excel implements Closeable{
 		return sheet;
 	}
 	/**
+	 * 获取当前行
+	 * @return
+	 */
+	public Row row(){
+		return cur;
+	}
+	/**
+	 * 获取下一列索引
+	 * @return
+	 */
+	public int colNum(){
+		return colNum;
+	}
+	/**
 	 * 切换到指定位置
 	 * @param row 
 	 * @param col 

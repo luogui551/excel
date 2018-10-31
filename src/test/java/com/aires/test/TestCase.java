@@ -49,7 +49,7 @@ public class TestCase {
 	@Test
 	public void skip(){
 		Excel excel = ExcelUtil.parse(excelFile);
-		excel.skipRow(5).skip(5);
+		excel.skipRow(5).skipCol(5);
 		
 		excel.write("第6行,第6列");
 	}
